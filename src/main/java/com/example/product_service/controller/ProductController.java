@@ -20,17 +20,17 @@ import com.example.product_service.model.Product;
 import com.example.product_service.service.ProductService;
 
 import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
 
 @Validated
 @RestController
 @RequestMapping("/products")
+@RequiredArgsConstructor
 public class ProductController {
 
     private final ProductService service;
 
-    public ProductController(ProductService service) {
-        this.service = service;
-    }
+   
 
     @GetMapping
     public List<Product> getAll() {

@@ -10,15 +10,15 @@ import com.example.product_service.dto.ProductDecrementRequest;
 import com.example.product_service.model.Product;
 import com.example.product_service.repository.ProductRepository;
 
+import lombok.RequiredArgsConstructor;
+
 @Service
+@RequiredArgsConstructor
 public class ProductService {
 
     private final ProductRepository repository;
 
-    public ProductService(ProductRepository repository) {
-        this.repository = repository;
-    }
-
+    
     public List<Product> findAll() {
         return repository.findAll();
     }
