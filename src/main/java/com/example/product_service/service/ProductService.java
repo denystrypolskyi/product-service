@@ -18,17 +18,12 @@ public class ProductService {
 
     private final ProductRepository repository;
 
-    
     public List<Product> findAll() {
         return repository.findAll();
     }
 
     public Optional<Product> findById(Long id) {
         return repository.findById(id);
-    }
-
-    public Product save(Product product) {
-        return repository.save(product);
     }
 
     public Product createProduct(ProductDTO dto) {
@@ -40,21 +35,39 @@ public class ProductService {
         return repository.save(product);
     }
 
-    public void delete(Long id) {
-        repository.deleteById(id);
+    public Optional<Product> delete(Long id) {
+        return repository.findById(id)
+                .map(product -> {
+                    repository.deleteById(id);
+                    return product;
+                });
     }
 
-    public void decrementQuantities(List<ProductDecrementRequest> requests) {
+    public Optional<Void> decrementQuantities(List<ProductDecrementRequest> requests) {
         for (ProductDecrementRequest req : requests) {
-            Product product = repository.findById(req.getProductId())
-                    .orElseThrow(() -> new RuntimeException("Product not found"));
+            Optional<Product> productOpt = repository.findById(req.getProductId());
+            if (productOpt.isEmpty()) {
+                return Optional.empty();
+            }
+            Product product = productOpt.get();
 
             if (product.getQuantity() < req.getQuantity()) {
-                throw new RuntimeException("Not enough stock for product ID: " + req.getProductId());
+                return Optional.empty();
             }
 
             product.setQuantity(product.getQuantity() - req.getQuantity());
             repository.save(product);
         }
+        return Optional.of(null);
+    }
+
+    public Optional<Product> updateProduct(Long id, ProductDTO dto) {
+        return repository.findById(id).map(product -> {
+            product.setName(dto.getName());
+            product.setDescription(dto.getDescription());
+            product.setPrice(dto.getPrice());
+            product.setQuantity(dto.getQuantity());
+            return repository.save(product);
+        });
     }
 }

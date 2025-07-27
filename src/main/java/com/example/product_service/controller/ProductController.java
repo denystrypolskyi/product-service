@@ -30,8 +30,6 @@ public class ProductController {
 
     private final ProductService service;
 
-   
-
     @GetMapping
     public List<Product> getAll() {
         return service.findAll();
@@ -51,15 +49,26 @@ public class ProductController {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<?> delete(@PathVariable Long id) {
-        service.delete(id);
-        return ResponseEntity.noContent().build();
+    public ResponseEntity<Product> delete(@PathVariable Long id) {
+        return service.delete(id)
+                .map(deletedProduct -> ResponseEntity.ok(deletedProduct))
+                .orElse(ResponseEntity.notFound().build());
     }
 
     @PutMapping("/decrement-batch")
     public ResponseEntity<Void> decrementProductQuantities(
             @Valid @RequestBody List<@Valid ProductDecrementRequest> requests) {
-        service.decrementQuantities(requests);
-        return ResponseEntity.ok().build();
+        return service.decrementQuantities(requests)
+                .map(v -> ResponseEntity.ok().<Void>build())
+                .orElse(ResponseEntity.badRequest().build());
+    }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<Product> updateProduct(
+            @PathVariable Long id,
+            @Valid @RequestBody ProductDTO productDTO) {
+        return service.updateProduct(id, productDTO)
+                .map(ResponseEntity::ok)
+                .orElse(ResponseEntity.notFound().build());
     }
 }
