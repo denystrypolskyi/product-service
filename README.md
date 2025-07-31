@@ -1,36 +1,36 @@
 # Product Service
 
-This microservice is responsible for managing products. It allows creating, retrieving, updating, deleting, and decrementing product quantities.
+This microservice is responsible for managing products. It supports creating, retrieving, updating, deleting products, and decrementing product stock in batches.
 
 ## 🚀 Features
 
-- **Get all products**  
-  `GET /products` — Returns a list of all products.
+- Retrieve all products — get a list of all available products.
+- Retrieve product by ID — get detailed information about a specific product.
+- Create new products — add new products to the catalog.
+- Update existing products — modify details of existing products.
+- Delete products — remove products from the catalog.
+- Batch decrement product quantities — reduce stock quantities for multiple products in one request.
 
-- **Get product by ID**  
-  `GET /products/{id}` — Returns a single product by its ID.
+## 📌 Endpoints
 
-- **Create product**  
-  `POST /products` — Adds a new product (🔒 authentication required).
-
-- **Update product**  
-  `PUT /products/{id}` — Updates product details (🔒 authentication required).
-
-- **Delete product**  
-  `DELETE /products/{id}` — Deletes a product (🔒 authentication required).
-
-- **Batch decrement quantities**  
-  `PUT /products/decrement-batch` — Decreases stock for multiple products (🔒 authentication required).
+| Method   | Endpoint                    | Description                                | Authentication Required          |
+|----------|-----------------------------|--------------------------------------------|--------------------------------|
+| **GET**  | `/products`                 | Get all products                           | No                             |
+| **GET**  | `/products/{id}`            | Get a product by ID                        | No                             |
+| **POST** | `/products`                 | Create a new product                       | Yes                            |
+| **PUT**  | `/products/{id}`            | Update product details                     | Yes                            |
+| **DELETE** | `/products/{id}`          | Delete a product                           | Yes                            |
+| **PUT**  | `/products/decrement-batch` | Decrement quantities for multiple products | Yes                            |    
 
 ## 🔐 Security
 
-- Endpoints that modify data are protected by a custom `@Authenticated` annotation.
-- Currently, **any authenticated user** can create/update/delete products.
+- Currently, any authenticated user can create, update, or delete products.
+- In production, role-based access control would be added to restrict sensitive operations.
 
 ## 📦 Tech Stack
 
-- Java 24
-- Spring Boot
-- Jakarta Validation
-- PostgreSQL
-- Lombok
+- Java 24  
+- Spring Boot  
+- Jakarta Validation  
+- PostgreSQL  
+- Lombok  
