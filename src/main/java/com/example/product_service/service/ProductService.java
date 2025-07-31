@@ -3,7 +3,9 @@ package com.example.product_service.service;
 import java.util.List;
 import java.util.Optional;
 
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
 
 import com.example.product_service.dto.ProductDTO;
 import com.example.product_service.dto.ProductDecrementRequest;
@@ -43,22 +45,20 @@ public class ProductService {
                 });
     }
 
-    public Optional<Void> decrementQuantities(List<ProductDecrementRequest> requests) {
+    public void decrementQuantities(List<ProductDecrementRequest> requests) {
         for (ProductDecrementRequest req : requests) {
-            Optional<Product> productOpt = repository.findById(req.getProductId());
-            if (productOpt.isEmpty()) {
-                return Optional.empty();
-            }
-            Product product = productOpt.get();
+            Product product = repository.findById(req.getProductId())
+                    .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND,
+                            "Product not found: " + req.getProductId()));
 
             if (product.getQuantity() < req.getQuantity()) {
-                return Optional.empty();
+                throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
+                        "Not enough stock for product: " + product.getName());
             }
 
             product.setQuantity(product.getQuantity() - req.getQuantity());
             repository.save(product);
         }
-        return Optional.of(null);
     }
 
     public Optional<Product> updateProduct(Long id, ProductDTO dto) {

@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.example.product_service.dto.ProductDTO;
 import com.example.product_service.dto.ProductDecrementRequest;
 import com.example.product_service.model.Product;
+import com.example.product_service.security.Authenticated;
 import com.example.product_service.service.ProductService;
 
 import jakarta.validation.Valid;
@@ -42,12 +43,14 @@ public class ProductController {
                 .orElse(ResponseEntity.notFound().build());
     }
 
+    @Authenticated
     @PostMapping
     public ResponseEntity<Product> createProduct(@Valid @RequestBody ProductDTO productDTO) {
         Product created = service.createProduct(productDTO);
         return ResponseEntity.status(HttpStatus.CREATED).body(created);
     }
 
+    @Authenticated
     @DeleteMapping("/{id}")
     public ResponseEntity<Product> delete(@PathVariable Long id) {
         return service.delete(id)
@@ -55,14 +58,15 @@ public class ProductController {
                 .orElse(ResponseEntity.notFound().build());
     }
 
+    @Authenticated
     @PutMapping("/decrement-batch")
     public ResponseEntity<Void> decrementProductQuantities(
             @Valid @RequestBody List<@Valid ProductDecrementRequest> requests) {
-        return service.decrementQuantities(requests)
-                .map(v -> ResponseEntity.ok().<Void>build())
-                .orElse(ResponseEntity.badRequest().build());
+        service.decrementQuantities(requests);
+        return ResponseEntity.ok().build();
     }
 
+    @Authenticated
     @PutMapping("/{id}")
     public ResponseEntity<Product> updateProduct(
             @PathVariable Long id,
