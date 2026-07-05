@@ -12,6 +12,7 @@ import com.example.product_service.dto.ProductDecrementRequest;
 import com.example.product_service.model.Product;
 import com.example.product_service.repository.ProductRepository;
 
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 
 @Service
@@ -45,6 +46,7 @@ public class ProductService {
                 });
     }
 
+    @Transactional
     public void decrementQuantities(List<ProductDecrementRequest> requests) {
         for (ProductDecrementRequest req : requests) {
             Product product = repository.findById(req.getProductId())
@@ -57,7 +59,6 @@ public class ProductService {
             }
 
             product.setQuantity(product.getQuantity() - req.getQuantity());
-            repository.save(product);
         }
     }
 

@@ -16,8 +16,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.example.product_service.dto.ProductDTO;
 import com.example.product_service.dto.ProductDecrementRequest;
-import com.example.product_service.model.Product;
-import com.example.product_service.security.Authenticated;
+import com.example.product_service.dto.ProductResponseDTO;
 import com.example.product_service.service.ProductService;
 
 import jakarta.validation.Valid;
@@ -32,33 +31,34 @@ public class ProductController {
     private final ProductService service;
 
     @GetMapping
-    public List<Product> getAll() {
-        return service.findAll();
+    public List<ProductResponseDTO> getAll() {
+        return service.findAll().stream()
+                .map(ProductResponseDTO::from)
+                .toList();
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Product> getById(@PathVariable Long id) {
+    public ResponseEntity<ProductResponseDTO> getById(@PathVariable Long id) {
         return service.findById(id)
+                .map(ProductResponseDTO::from)
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
     }
 
-    @Authenticated
     @PostMapping
-    public ResponseEntity<Product> createProduct(@Valid @RequestBody ProductDTO productDTO) {
-        Product created = service.createProduct(productDTO);
-        return ResponseEntity.status(HttpStatus.CREATED).body(created);
+    public ResponseEntity<ProductResponseDTO> createProduct(@Valid @RequestBody ProductDTO productDTO) {
+        return ResponseEntity.status(HttpStatus.CREATED)
+                .body(ProductResponseDTO.from(service.createProduct(productDTO)));
     }
 
-    @Authenticated
     @DeleteMapping("/{id}")
-    public ResponseEntity<Product> delete(@PathVariable Long id) {
+    public ResponseEntity<ProductResponseDTO> delete(@PathVariable Long id) {
         return service.delete(id)
-                .map(deletedProduct -> ResponseEntity.ok(deletedProduct))
+                .map(ProductResponseDTO::from)
+                .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
     }
 
-    @Authenticated
     @PutMapping("/decrement-batch")
     public ResponseEntity<Void> decrementProductQuantities(
             @Valid @RequestBody List<@Valid ProductDecrementRequest> requests) {
@@ -66,12 +66,12 @@ public class ProductController {
         return ResponseEntity.ok().build();
     }
 
-    @Authenticated
     @PutMapping("/{id}")
-    public ResponseEntity<Product> updateProduct(
+    public ResponseEntity<ProductResponseDTO> updateProduct(
             @PathVariable Long id,
             @Valid @RequestBody ProductDTO productDTO) {
         return service.updateProduct(id, productDTO)
+                .map(ProductResponseDTO::from)
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
     }
