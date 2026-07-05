@@ -49,9 +49,7 @@ Product catalog service for the e-commerce backend. It manages product data and 
 
 ## Notes
 
-- Write operations require a valid JWT bearer token.
-- Batch stock decrement is transactional.
-- Product entities use optimistic locking to reduce concurrent stock update issues.
+- Optimistic locking protects product quantities during concurrent updates.
 
 ## Run Tests
 
