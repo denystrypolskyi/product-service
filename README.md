@@ -1,6 +1,6 @@
 # Product Service
 
-Product catalog service for the distributed backend system. It manages product data and stock quantities used during order creation.
+Product catalog service for the e-commerce backend. It manages product data and stock quantities used during order creation.
 
 ## Tech Stack
 
