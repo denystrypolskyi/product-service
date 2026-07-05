@@ -1,36 +1,60 @@
 # Product Service
 
-This microservice is responsible for managing products. It supports creating, retrieving, updating, deleting products, and decrementing product stock in batches.
+Product catalog service for the distributed backend system. It manages product data and stock quantities used during order creation.
 
-## 🚀 Features
+## Tech Stack
 
-- Retrieve all products — get a list of all available products.
-- Retrieve product by ID — get detailed information about a specific product.
-- Create new products — add new products to the catalog.
-- Update existing products — modify details of existing products.
-- Delete products — remove products from the catalog.
-- Batch decrement product quantities — reduce stock quantities for multiple products in one request.
+- Java 21
+- Spring Boot
+- Spring Web
+- Spring Security
+- Spring Data JPA
+- PostgreSQL
+- Flyway
+- Bean Validation
+- JUnit, Mockito, MockMvc
 
-## 📌 Endpoints
+## API
 
-| Method   | Endpoint                    | Description                                | Authentication Required          |
-|----------|-----------------------------|--------------------------------------------|--------------------------------|
-| **GET**  | `/products`                 | Get all products                           | No                             |
-| **GET**  | `/products/{id}`            | Get a product by ID                        | No                             |
-| **POST** | `/products`                 | Create a new product                       | Yes                            |
-| **PUT**  | `/products/{id}`            | Update product details                     | Yes                            |
-| **DELETE** | `/products/{id}`          | Delete a product                           | Yes                            |
-| **PUT**  | `/products/decrement-batch` | Decrement quantities for multiple products | Yes                            |    
+| Method | Endpoint | Auth | Description |
+| --- | --- | --- | --- |
+| `GET` | `/products` | No | List all products |
+| `GET` | `/products/{id}` | No | Get a product by ID |
+| `POST` | `/products` | Yes | Create a product |
+| `PUT` | `/products/{id}` | Yes | Update a product |
+| `DELETE` | `/products/{id}` | Yes | Delete a product |
+| `PUT` | `/products/decrement-batch` | Yes | Decrease stock for multiple products |
 
-## 🔐 Security
+### Product Request
 
-- Currently, any authenticated user can create, update, or delete products.
-- In production, role-based access control would be added to restrict sensitive operations.
+```json
+{
+  "name": "Keyboard",
+  "description": "Mechanical keyboard",
+  "price": 99.99,
+  "quantity": 10
+}
+```
 
-## 📦 Tech Stack
+### Batch Decrement Request
 
-- Java 24  
-- Spring Boot  
-- Jakarta Validation  
-- PostgreSQL  
-- Lombok  
+```json
+[
+  {
+    "productId": 1,
+    "quantity": 2
+  }
+]
+```
+
+## Notes
+
+- Write operations require a valid JWT bearer token.
+- Batch stock decrement is transactional.
+- Product entities use optimistic locking to reduce concurrent stock update issues.
+
+## Run Tests
+
+```powershell
+.\mvnw.cmd test
+```
